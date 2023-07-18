@@ -32,9 +32,9 @@ then
     exit 1
 fi
 
-read -p "Does the gateway have an I/O box with two network ports on the front? (y/n)" ioBox
+#read -p "Does the gateway have an I/O box with two network ports on the front? (y/n)" ioBox
 
-if [ "$ioBox" = "n" ]; then
-  echo "This script only currently supports Cell Gateways with an I/O box"
-  exit 1
-fi
+#if [ "$ioBox" = "n" ]; then
+#  echo "This script only currently supports Cell Gateways with an I/O box"
+#  exit 1
+#fi

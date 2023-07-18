@@ -19,7 +19,7 @@ async function run (argv) {
     console.log('Reading kubeseal cert from file...');
     const kubeseal_cert = await fs.readFile("install/kubesealCert.pem", 
         { encoding: "utf-8" });
-    console.log('Kubeseal cert read successfully.', kubeseal_cert);
+    console.log('Kubeseal cert read successfully.');
 
     const instance = axios.create();
 

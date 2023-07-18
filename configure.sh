@@ -9,7 +9,7 @@ MSG
     exit 1
 fi
 
-set -ex
+set -e
 
 . ./sh/getopts.sh
 
