@@ -1,2 +1,4 @@
+*.swp
+.idea
 # Installation scripts
 install/
