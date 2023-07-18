@@ -34,7 +34,7 @@ read -p "Please enter the username of a Factory+ administrator user: " KERBUSER
 kinit $KERBUSER
 
 echo Registering edge cluster...
-node src/bootstrap.js "${scheme}://edge.${baseURL}" "$template"
+node src/bootstrap.js "${scheme}://edo.${baseURL}" "$template"
 
 . ./install/cluster-info.sh
 . ./sh/setup-flux.sh
