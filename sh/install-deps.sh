@@ -20,7 +20,7 @@ bash ./install/node-apt.sh
 
 apt-get install -y \
     wireguard g++ iptables-persistent dnsmasq krb5-user \
-    cmake libkrb5-dev nodejs jq
+    cmake libkrb5-dev nodejs jq dialog
 
 bash ./install/helm.sh
 bash ./install/flux.sh

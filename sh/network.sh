@@ -7,30 +7,57 @@ then
     exit 1
 fi
 
+# Run `ip -br l` command and store the list of available interfaces in a variable
+interfaces=$(ip -br l)
+
+# Parse the output to extract interface name, status, and MAC address
+options=()
+while read -r line; do
+  name=$(echo "$line" | awk '{print $1}')
+  status=$(echo "$line" | awk '{print $3}')
+  mac=$(echo "$line" | awk '{print $2}')
+  options+=("$name" "$status - $mac")
+done <<< "$interfaces"
+
+
 # Northbound interface
-ENN=$(ip -br l | awk '$1 ~ "enp" { print $1}' | sed -n 1p)
+ENN=$(dialog --menu "Select the NORTHBOUND interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
 
-# Southbound interface 1
-ENS1=$(ip -br l | awk '$1 ~ "enx" { print $1}' | sed -n 1p)
+# Southbound interface
+ENS=$(dialog --menu "Select the SOUTHBOUND interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
 
-# Southbound interface 2
-ENS2=$(ip -br l | awk '$1 ~ "enx" { print $1}' | sed -n 2p)
+# Cluster interface
+ENC=$(dialog --menu "Select the CLUSTER interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
 
-if [ -z "$ENN" ]
+# Quit if any of the interfaces are not selected
+if [ -z "$ENN" ] || [ -z "$ENS" ] || [ -z "$ENC" ]
 then
-  echo "Northbound interface could not be found"
-  exit 1
+    echo "You must select all interfaces!" >&2
+    exit 1
 fi
-if [ -z "$ENS1" ]
-then
-  echo "First southbound interface could not be found"
-  exit 1
+
+# Check if running over SSH
+if [[ -n "$SSH_CONNECTION" ]]; then
+  # Retrieve the SSH client's IP address
+  ssh_client_ip=$(echo "$SSH_CONNECTION" | awk '{print $3}')
+
+  # Get the IP address of the selected interface
+  northbound_ip=$(ip -o -4 addr show dev "$ENN" | awk '{print $4}' | cut -d "/" -f 1)
+
+  # Check if the SSH client IP matches the selected interface's IP
+  if [[ "$northbound_ip" != "$ssh_client_ip" ]]; then
+    clear
+    echo "Error: The NORTHBOUND interface must be the same interface that you're using for the current SSH connection."
+    exit 1
+  fi
 fi
-if [ -z "$ENS2" ]
-then
-  echo "Second southbound interface could not be found"
-  exit 1
-fi
+
+# Clear the screen
+clear
+
+echo Northbound: $ENN
+echo Southbound: $ENS
+echo Cluster: $ENC
 
 # Serial number
 SERIAL=$(dmidecode -s system-serial-number | tr [:upper:] [:lower:])
@@ -39,10 +66,6 @@ hostnamectl set-hostname fpcgw-${SERIAL}
 echo $(hostname)
 
 echo Configuring network...
-echo Adapters found:
-echo ENN: $ENN
-echo ENS1: $ENS1
-echo ENS2: $ENS2
 
 echo Setting iptables...
 # Allow all incoming connections
@@ -66,7 +89,7 @@ netfilter-persistent save
 iptables-legacy-save
 
 echo Configuring dnsmasq on the 10.0.0.1 interface...
-echo -e $"interface=$ENS2\nbind-interfaces\nno-hosts\ndhcp-range=10.0.0.2,10.0.0.150,12h" >"/etc/dnsmasq.conf"
+echo -e $"interface=$ENC\nbind-interfaces\nno-hosts\ndhcp-range=10.0.0.2,10.0.0.150,12h" >"/etc/dnsmasq.conf"
 systemctl restart dnsmasq
 
 echo Writing netplan config...
@@ -85,11 +108,11 @@ printf "network:
     $ENN:
       dhcp4: true
       critical: true
-    $ENS1:
+    $ENS:
       optional: true
       addresses:
         - 192.168.1.100/24
-    $ENS2:
+    $ENC:
       ignore-carrier: true
       addresses:
         - 10.0.0.1/24
