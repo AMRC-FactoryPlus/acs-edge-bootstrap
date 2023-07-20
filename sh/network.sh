@@ -21,7 +21,7 @@ done <<< "$interfaces"
 
 
 # Northbound interface
-ENN=$(dialog --menu "Select the NORTHBOUND interface. If SSHing This must be the interface that:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
+ENN=$(dialog --menu "Select the NORTHBOUND interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
 
 # Southbound interface
 ENS=$(dialog --menu "Select the SOUTHBOUND interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
