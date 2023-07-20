@@ -70,6 +70,14 @@ echo -e $"interface=$ENS2\nbind-interfaces\nno-hosts\ndhcp-range=10.0.0.2,10.0.0
 systemctl restart dnsmasq
 
 echo Writing netplan config...
+
+# Backup the netplan directory
+cp -r /etc/netplan ./netplan.bak
+echo "Backed up existing netplan config to ./netplan.bak"
+
+# Delete all files in the netplan directory
+rm /etc/netplan/*.yaml
+
 rm /etc/netplan/00*
 printf "network:
   version: 2
