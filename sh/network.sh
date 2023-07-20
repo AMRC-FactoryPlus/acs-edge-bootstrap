@@ -21,7 +21,7 @@ done <<< "$interfaces"
 
 
 # Northbound interface
-ENN=$(dialog --menu "Select the NORTHBOUND interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
+ENN=$(dialog --menu "Select the NORTHBOUND interface. If SSHing This must be the interface that:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
 
 # Southbound interface
 ENS=$(dialog --menu "Select the SOUTHBOUND interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
@@ -34,6 +34,22 @@ if [ -z "$ENN" ] || [ -z "$ENS" ] || [ -z "$ENC" ]
 then
     echo "You must select all interfaces!" >&2
     exit 1
+fi
+
+# Check if running over SSH
+if [[ -n "$SSH_CONNECTION" ]]; then
+  # Retrieve the SSH client's IP address
+  ssh_client_ip=$(echo "$SSH_CONNECTION" | awk '{print $3}')
+
+  # Get the IP address of the selected interface
+  northbound_ip=$(ip -o -4 addr show dev "$ENN" | awk '{print $4}' | cut -d "/" -f 1)
+
+  # Check if the SSH client IP matches the selected interface's IP
+  if [[ "$northbound_ip" != "$ssh_client_ip" ]]; then
+    clear
+    echo "Error: The NORTHBOUND interface must be the same interface that you're using for the current SSH connection."
+    exit 1
+  fi
 fi
 
 # Clear the screen
