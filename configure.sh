@@ -19,7 +19,7 @@ mkdir -p install
 . ./sh/downloads.sh
 
 echo Running necessary steps as root via sudo...
-ACS_DOMAIN="$baseURL" REALM="$realm" sudo -E /bin/sh ./sh/as-root.sh
+ACS_DOMAIN="$baseURL" REALM="$realm" sudo -E /bin/bash ./sh/as-root.sh
 
 echo "Setting KUBECONFIG for use by k8s tools..."
 export KUBECONFIG="$(realpath ./install/k3s.yaml)"
