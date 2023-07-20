@@ -78,7 +78,6 @@ echo "Backed up existing netplan config to ./netplan.bak"
 # Delete all files in the netplan directory
 rm /etc/netplan/*.yaml
 
-rm /etc/netplan/00*
 printf "network:
   version: 2
   renderer: networkd
