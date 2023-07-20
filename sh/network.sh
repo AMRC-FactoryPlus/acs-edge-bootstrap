@@ -29,6 +29,13 @@ ENS=$(dialog --menu "Select the SOUTHBOUND interface:" 0 0 0 "${options[@]}" 2>&
 # Cluster interface
 ENC=$(dialog --menu "Select the CLUSTER interface:" 0 0 0 "${options[@]}" 2>&1 >/dev/tty)
 
+# Quit if any of the interfaces are not selected
+if [ -z "$ENN" ] || [ -z "$ENS" ] || [ -z "$ENC" ]
+then
+    echo "You must select all interfaces!" >&2
+    exit 1
+fi
+
 # Clear the screen
 clear
 
