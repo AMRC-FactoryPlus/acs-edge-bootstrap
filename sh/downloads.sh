@@ -5,8 +5,8 @@ echo Downloading installation scripts...
 (
     cd install
     fetch="curl -sSL --fail-early"
-    $fetch https://apt.kitware.com/keys/kitware-archive-latest.asc >kitware.key
-    $fetch https://deb.nodesource.com/setup_20.x >node-apt.sh
+    $fetch https://apt.kitware.com/keys/kitware-archive-latest.asc >kitware.asc
+    $fetch https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key >nodesource.asc
     $fetch https://get.k3s.io >k3s.sh
     $fetch https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 >helm.sh
     $fetch https://fluxcd.io/install.sh >flux.sh

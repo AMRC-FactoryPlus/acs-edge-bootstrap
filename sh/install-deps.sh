@@ -10,13 +10,14 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 echo Installing Dependencies...
-apt-key add ./install/kitware.key
-apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main' -y
+install ./install/kitware.asc /etc/apt/trusted.gpg.d/kitware.asc
+install ./install/nodesource.asc /etc/apt/trusted.gpg.d/nodesource.asc
+apt-add-repository -ny -S 'deb https://apt.kitware.com/ubuntu/ jammy main'
+apt-add-repository -ny -S 'deb https://deb.nodesource.com/node_20.x nodistro main'
 apt-get update 
 
 apt-get install -y \
     apt-transport-https ca-certificates gnupg software-properties-common wget
-bash ./install/node-apt.sh
 
 apt-get install -y \
     wireguard g++ iptables-persistent dnsmasq krb5-user \
