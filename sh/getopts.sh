@@ -6,15 +6,24 @@
 #realm = ""
 
 scheme=https
+step=all
 
-while getopts u:r:St: flag; do
+while getopts u:r:Ss:t: flag; do
   case "${flag}" in
   u) baseURL=${OPTARG} ;;
   r) realm=${OPTARG} ;;
   S) scheme=http ;;
+  s) step="${OPTARG}" ;;
   t) template="${OPTARG}" ;;
   esac
 done
+
+case "$step" in
+  all|download|install|join|flux)   ;;
+  *)  echo "Unknown step '${step}'"
+      exit 1
+      ;;
+esac
 
 if [ -z "$baseURL" ]
 then
