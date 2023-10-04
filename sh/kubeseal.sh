@@ -3,7 +3,9 @@
 
 echo Configuring Sealed Secrets...
 helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
-helm install sealed-secrets sealed-secrets/sealed-secrets
+helm install \
+    -n sealed-secrets --create-namespace \
+    sealed-secrets sealed-secrets/sealed-secrets
 tar -xvzf ./install/kubeseal.tar.gz -C install kubeseal
 
 echo "Fetching sealed secrets certificate..."
@@ -12,7 +14,7 @@ sleep 3
 while true
 do
   ./install/kubeseal --controller-name sealed-secrets \
-    --controller-namespace default \
+    --controller-namespace sealed-secrets \
     --fetch-cert >./install/kubesealCert.pem \
     || true
 
